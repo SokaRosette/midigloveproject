@@ -1,0 +1,483 @@
+#include <Bounce.h>
+#include <LiquidCrystal.h>
+
+//This Version of the Code is created for the Teensy 4.1
+const int channel = 1; //sends note signal to channel 1 of the DAW
+
+int velocity; //controls
+
+//Sets range of "high" truth value for analog values to act
+//as digital ones
+const int lower = 14;
+const int upper = 16;
+
+//1st Key: A9
+int state;
+int digstate = 0;
+int prevdigstate = 0;
+//int note = 72;
+
+//2nd Key: A8
+int state2;
+int digstate2 = 0;
+int prevdigstate2 = 0;
+//int note2 = 60;
+
+//3rd Key: A7
+int state3;
+int digstate3 = 0;
+int prevdigstate3 = 0;
+//int note3 = 71;
+
+//4th Key: A6
+int state4;
+int digstate4 = 0;
+int prevdigstate4 = 0;
+//int note4 = 62;
+
+//5th Key: A5
+int state5;
+int digstate5 = 0;
+int prevdigstate5 = 0;
+//int note5 = 69;
+
+//6th Key: A4
+int state6;
+int digstate6 = 0;
+int prevdigstate6 = 0;
+//int note6 = 64;
+
+//7th Key: A3
+int state7;
+int digstate7 = 0;
+int prevdigstate7 = 0;
+//int note7 = 67;
+
+//8th Key: A2
+int state8;
+int digstate8 = 0;
+int prevdigstate8 = 0;
+//int note8 = 65;
+
+//Shift Key: Up
+int state9;
+int digstate9 = 0;
+int prevdigstate9 = 0;
+
+//Shift Key: Down
+int state10;
+int digstate10 = 0;
+int prevdigstate10 = 0;
+
+//Octave-Key Switch
+int state11;
+int prevdigstate11 = 0;
+int shift = 1;
+
+//Note Array
+int notearray[8] = {72, 60, 71, 62, 69, 64, 67, 65};
+int thisNote = 0;
+//CMaj: 60, 62, 64, 65, 67, 69, 71, 72
+//CMin: 60, 62, 63, 65, 67, 68, 70, 72
+
+//Names for Keys
+String keys[12] = {"C", "Db", "D", "Eb" , "E" , "F", "Gb" , "G", "Ab", "A", "Bb", "B"};
+int noteremainder;
+int range;
+
+//LCD Setup
+const int rs = 0, en = 1, d4 = 2, d5 = 3, d6 = 4, d7 = 5;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  pinMode(A2, INPUT);
+  pinMode(A3, INPUT);
+  pinMode(A4, INPUT);
+  pinMode(A5, INPUT);
+  pinMode(A6, INPUT);
+  pinMode(A7, INPUT);
+  pinMode(A8, INPUT);
+  pinMode(A9, INPUT);
+  pinMode(36, INPUT);
+  pinMode(A17, INPUT);
+  analogReadResolution(10);
+  analogReadAveraging(16);
+
+  lcd.begin(20, 4);
+}
+
+void loop() {
+  //Controls note's volume
+  int velocity = (analogRead(A17) / 7.2598);
+  Serial.print("velocity: ");
+  Serial.println(velocity);
+
+  //1st Key
+  //Divides the analog value by 64 
+  //Making the value smaller from 
+  int state = analogRead(A9) / 64;
+  //Prints whether or not the key is at a
+  //"high" or "low" values in the Serial Monitor
+  Serial.print("analog value 1: ");
+  Serial.println(state);
+
+  //Converts the range of analog values into binary truth values
+  if (lower < state and state  < upper) {
+    digstate = 1;
+  }
+    else {
+    digstate = 0;
+  }
+
+  //Creates an "rising edge" function so the note only does something 
+  //when it switches between states
+  if (digstate != prevdigstate){
+  //If the truth value goes from 0 to 1, it plays the note in the program
+    if (digstate == 1) {
+      usbMIDI.sendNoteOn(notearray[0], velocity, channel);
+      prevdigstate = digstate;
+    }
+  //If the truth value goes from 1 to 0, it turns off the note in the program
+    if (digstate == 0) {
+      usbMIDI.sendNoteOff(notearray[0], velocity, channel);
+      prevdigstate = digstate;
+    }
+  }
+
+  //Repeat nine more times for the seven other notes
+  //and the two key/octave shifts
+  //2nd Key
+  int state2 = analogRead(A8) / 64;
+  Serial.print("analog value 2: ");
+  Serial.println(state2);
+
+  if (lower < state2 and state2 < upper) {
+    digstate2 = 1;
+  }
+    else {
+    digstate2 = 0;
+  }
+
+  if (digstate2 != prevdigstate2){
+    if (digstate2 == 1) {
+      usbMIDI.sendNoteOn(notearray[1], velocity, channel);
+      prevdigstate2 = digstate2;
+    }
+
+    else {
+      usbMIDI.sendNoteOff(notearray[1], velocity, channel);
+      prevdigstate2 = digstate2;
+    }
+  }
+
+  //3rd Key
+  int state3 = analogRead(A7) / 64;
+  Serial.print("analog value 3: ");
+  Serial.println(state3);
+
+  if (12 < state3 and state3 < upper) {
+    digstate3 = 1;
+  }
+    else {
+    digstate3 = 0;
+  }
+
+  if (digstate3 != prevdigstate3){
+    if (digstate3 == 1) {
+      usbMIDI.sendNoteOn(notearray[2], velocity, channel);
+      prevdigstate3 = digstate3;
+    }
+
+    else {
+      usbMIDI.sendNoteOff(notearray[2], velocity, channel);
+      prevdigstate3 = digstate3;
+    }
+  }
+
+  //4th Key
+  int state4 = analogRead(A6) / 64;
+  Serial.print("analog value 4: ");
+  Serial.println(state4);
+
+  if (lower < state4 and state4 < upper) {
+    digstate4 = 1;
+  }
+    else {
+    digstate4 = 0;
+  }
+
+  if (digstate4 != prevdigstate4){
+    if (digstate4 == 1) {
+      usbMIDI.sendNoteOn(notearray[3], velocity, channel);
+      prevdigstate4 = digstate4;
+    }
+
+    else {
+      usbMIDI.sendNoteOff(notearray[3], velocity, channel);
+      prevdigstate4 = digstate4;
+    }
+  }
+
+  //5th Key
+  int state5 = analogRead(A5) / 64;
+  Serial.print("analog value 5: ");
+  Serial.println(state5);
+
+  if (lower < state5 and state5 < upper) {
+    digstate5 = 1;
+  }
+    else {
+    digstate5 = 0;
+  }
+
+  if (digstate5 != prevdigstate5){
+    if (digstate5 == 1) {
+      usbMIDI.sendNoteOn(notearray[4], velocity, channel);
+      prevdigstate5 = digstate5;
+    }
+
+    else {
+      usbMIDI.sendNoteOff(notearray[4], velocity, channel);
+      prevdigstate5 = digstate5;
+    }
+  }
+
+  //6th Key
+  int state6 = analogRead(A4) / 64;
+  Serial.print("analog value 6: ");
+  Serial.println(state6);
+
+  if (lower < state6 and state6 < upper) {
+    digstate6 = 1;
+  }
+    else {
+    digstate6 = 0;
+  }
+
+  if (digstate6 != prevdigstate6){
+    if (digstate6 == 1) {
+      usbMIDI.sendNoteOn(notearray[5], velocity, channel);
+      prevdigstate6 = digstate6;
+    }
+
+    else {
+      usbMIDI.sendNoteOff(notearray[5], velocity, channel);
+      prevdigstate6 = digstate6;
+    }
+  }
+
+  //7th Key
+  int state7 = analogRead(A3) / 64;
+  Serial.print("analog value 7: ");
+  Serial.println(state7);
+
+  if (lower < state7 and state7 < upper) {
+    digstate7 = 1;
+  }
+    else {
+    digstate7 = 0;
+  }
+
+  if (digstate7 != prevdigstate7){
+    if (digstate7 == 1) {
+      usbMIDI.sendNoteOn(notearray[6], velocity, channel);
+      prevdigstate7 = digstate7;
+    }
+
+    else {
+      usbMIDI.sendNoteOff(notearray[6], velocity, channel);
+      prevdigstate7 = digstate7;
+    }
+  }
+
+  //8th Key
+  int state8 = analogRead(A2) / 64;
+  Serial.print("analog value 8: ");
+  Serial.println(state8);
+
+  if (lower < state8 and state8 < upper) {
+    digstate8 = 1;
+  }
+    else {
+    digstate8 = 0;
+  }
+
+  if (digstate8 != prevdigstate8){
+    if (digstate8 == 1) {
+      usbMIDI.sendNoteOn(notearray[7], velocity, channel);
+      prevdigstate8 = digstate8;
+    }
+
+    else {
+      usbMIDI.sendNoteOff(notearray[7], velocity, channel);
+      prevdigstate8 = digstate8;
+    }
+  }
+
+  //Shift Up
+  int state9 = analogRead(A1) / 64;
+  Serial.print("analog value 9: ");
+  Serial.println(state9);
+
+  if (lower < state9 and state9 < upper) {
+    digstate9 = 1;
+  }
+
+  else {
+    digstate9 = 0;
+  }
+
+ if (digstate9 != prevdigstate9){
+    if (digstate9 == 1) {
+      //Shifts the value of each note up either 1 or 12
+      //Depending on if shift is equal to 1 or 12
+      while (thisNote < 8){
+        notearray[thisNote] = (notearray[thisNote]) + shift;
+        thisNote = thisNote + 1;
+      }
+      thisNote = 0;
+      prevdigstate9 = digstate9;
+    }
+
+    else {
+      prevdigstate9 = digstate9;
+    }
+ }
+
+  //Shift Down
+  int state10 = analogRead(A0) / 64;
+  Serial.print("analog value 10: ");
+  Serial.println(state10);
+
+  if (lower < state10 and state10 < upper) {
+    digstate10 = 1;
+  }
+
+  else {
+    digstate10 = 0;
+  }
+
+   if (digstate10 != prevdigstate10){
+    if (digstate10 == 1) {
+      //Shifts the value of each note down either 1 or 12
+      //Depending on if shift is equal to 1 or 12
+      while (thisNote < 8){
+        notearray[thisNote] = (notearray[thisNote]) - shift;
+        thisNote = thisNote + 1;
+      }
+      thisNote = 0;
+      prevdigstate10 = digstate10;
+    }
+
+    else {
+      prevdigstate10 = digstate10;
+    }
+
+  }
+
+  int state11 = digitalRead(36);
+  Serial.print("digital value 1: ");
+  Serial.println(state11);
+
+  //Changes the value of shift between 1 or 12
+  //1 shifts every note up a mode
+  //12 shifts every note up an octave
+  backshift:
+  if (state11 != prevdigstate11){
+    if (state11 == 1){
+      if (shift == 1) {
+        shift = 12;
+        prevdigstate11 = state11;
+        goto backshift;
+      }
+      else if (shift == 12) {
+        shift = 1;
+        prevdigstate11 = state11;
+        goto backshift;
+      }
+    }
+    if (state11 == 0){
+      prevdigstate11 = state11;
+    }
+  }
+
+  //Prints in the serial whether the shift button 
+  //will shift a key or an octave
+  Serial.print("Shift: ");
+  Serial.print(shift);
+  if (shift == 12){
+    Serial.println(" , Octave");
+  }
+  if (shift == 1){
+    Serial.println(" , Key");
+  }
+
+  //Prints the value of the mode's root Note in the serial monitor
+  Serial.print("Note: ");
+  Serial.println(notearray[1]);
+
+  lcd.setCursor(0,0);
+  //prints the letter symbol of the mode's root note 
+  //in the LCD
+  lcd.print("Root:");
+  int noteremainder = notearray[1] % 12;
+  lcd.print(keys[noteremainder]);
+  
+  //Prints the range of the notes
+  //So if 72 is C5 and the root note was at 72, the range would be 5
+  lcd.print(" Ran:");
+  if ((notearray[1] - 60) >= 0){
+  int range = ((notearray[1] - 60) / 12) + 4;
+  lcd.print(range);
+  }
+  if ((notearray[1] - 60) < 0){
+  int range = (((notearray[1] - 72) / 12) + 4);
+  lcd.print(range);
+  }
+
+  //Prints on the LCD whether the shift button 
+  //will shift a key or an octave
+  lcd.setCursor(0,1);
+  lcd.print("Shift:");
+  if (shift == 12){
+    lcd.print("Octave");
+  }
+  if (shift == 1){
+    lcd.print("Key");
+  }
+
+  //Prints the volvume value on the LCD
+  lcd.print(" V:");
+  lcd.print(velocity);
+
+
+
+  lcd.setCursor(0,2);
+  lcd.print("1|2|3|4|5|6|7|8 ");
+  lcd.setCursor(0,3);
+  lcd.print(digstate);
+  lcd.print("|");
+  lcd.print(digstate2);
+  lcd.print("|");
+  lcd.print(digstate3);
+  lcd.print("|");
+  lcd.print(digstate4);
+  lcd.print("|");
+  lcd.print(digstate5);
+  lcd.print("|");
+  lcd.print(digstate6);
+  lcd.print("|");
+  lcd.print(digstate7);
+  lcd.print("|");
+  lcd.print(digstate8);
+  
+  delay(100);
+  lcd.clear();
+  while (usbMIDI.read()) {
+    // ignore incoming messages
+  }
+}
