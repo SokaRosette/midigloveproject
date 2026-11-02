@@ -1,7 +1,7 @@
 #include <Bounce.h>
 #include <LiquidCrystal.h>
 
-//This Version of the Code is created for the Teensy 4.1 and was written originall in Arduino IDE
+//This Version of the Code is created for the Teensy 4.1 and was written originally in Arduino IDE
 const int channel = 1; //sends note signal to channel 1 of the DAW
 
 int velocity; //controls
