@@ -92,18 +92,18 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 void setup() {
   Serial.begin(9600);
 
-  pinMode(A0, INPUT);
-  pinMode(A1, INPUT);
-  pinMode(A2, INPUT);
-  pinMode(A3, INPUT);
-  pinMode(A4, INPUT);
-  pinMode(A5, INPUT);
-  pinMode(A6, INPUT);
-  pinMode(A7, INPUT);
-  pinMode(A8, INPUT);
-  pinMode(A9, INPUT);
-  pinMode(36, INPUT);
-  pinMode(A17, INPUT);
+  pinkey(A0, INPUT);
+  pinkey(A1, INPUT);
+  pinkey(A2, INPUT);
+  pinkey(A3, INPUT);
+  pinkey(A4, INPUT);
+  pinkey(A5, INPUT);
+  pinkey(A6, INPUT);
+  pinkey(A7, INPUT);
+  pinkey(A8, INPUT);
+  pinkey(A9, INPUT);
+  pinkey(36, INPUT);
+  pinkey(A17, INPUT);
   analogReadResolution(10);
   analogReadAveraging(16);
 
@@ -384,7 +384,7 @@ void loop() {
   Serial.println(state11);
 
   //Changes the value of shift between 1 or 12
-  //1 shifts every note up a mode
+  //1 shifts every note up a key
   //12 shifts every note up an octave
   backshift:
   if (state11 != prevdigstate11){
@@ -416,12 +416,12 @@ void loop() {
     Serial.println(" , Key");
   }
 
-  //Prints the value of the mode's root Note in the serial monitor
+  //Prints the value of the key's root note in the serial monitor
   Serial.print("Note: ");
   Serial.println(notearray[1]);
 
   lcd.setCursor(0,0);
-  //prints the letter symbol of the mode's root note 
+  //prints the letter symbol of the key's root note 
   //in the LCD
   lcd.print("Root:");
   int noteremainder = notearray[1] % 12;
